@@ -3,7 +3,7 @@
 
   const movies = [];
 
-  const renderMovies = function() {
+  const renderMovies = () => {
     $('#listings').empty();
 
     for (const movie of movies) {
@@ -57,4 +57,62 @@
   };
 
   // ADD YOUR CODE HERE
+  $('button').click((event) => {
+    event.preventDefault();
+    const input = $('input').val();
+
+    if (input.trim() === '') {
+      Materialize.toast('Please enter a movie title.', 4000);
+
+      return;
+    }
+
+    let $xhr = $.ajax({
+      method: 'GET',
+      url: `http://www.omdbapi.com/?s=${input}`,
+      dataType: 'json'
+    });
+
+    $xhr.done((data) => {
+      if ($xhr.status !== 200) {
+        return;
+      }
+      $('input').val('');
+      const response = data.Search;
+
+      for (const index in response) {
+        const movie = {
+          title: response[index].Title,
+          id: response[index].imdbID,
+          poster: response[index].Poster,
+          year: response[index].Year
+        };
+
+        getPlot(movie);
+
+        if (movie.poster !== 'N/A') {
+          movies.push(movie);
+        }
+      }
+    });
+
+    $xhr.fail((err) => {
+      Materialize.toast
+      ('Sorry, we are experiencing technical difficulties.', 4000);
+      console.error(err.statusText);
+    });
+
+    const getPlot = (movie) => {
+      $xhr = $.ajax({
+        method: 'GET',
+        url: `http://www.omdbapi.com/?i=${movie.id}&lot=full&r=json`,
+        dataType: 'json'
+      });
+
+      $xhr.done((data) => {
+        movie.plot = data.Plot;
+        renderMovies(movie.plot);
+      });
+    };
+  });
 })();
