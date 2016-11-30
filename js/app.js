@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  const movies = [];
+  let movies = [];
 
   const renderMovies = () => {
     $('#listings').empty();
@@ -114,5 +114,6 @@
         renderMovies(movie.plot);
       });
     };
+    movies = [];
   });
 })();
