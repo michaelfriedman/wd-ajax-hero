@@ -88,7 +88,7 @@
           year: response[index].Year
         };
 
-        getPlot(movie);
+        fetchPlot(movie);
 
         if (movie.poster !== 'N/A') {
           movies.push(movie);
@@ -102,7 +102,7 @@
       console.error(err.statusText);
     });
 
-    const getPlot = (movie) => {
+    const fetchPlot = (movie) => {
       $xhr = $.ajax({
         method: 'GET',
         url: `http://www.omdbapi.com/?i=${movie.id}&lot=full&r=json`,
