@@ -3,7 +3,7 @@
 
   const movies = [];
 
-  const renderMovies = function() {
+  const renderMovies = () => {
     $('#listings').empty();
 
     for (const movie of movies) {
@@ -67,7 +67,7 @@
       return;
     }
 
-    const $xhr = $.ajax({
+    let $xhr = $.ajax({
       method: 'GET',
       url: `http://www.omdbapi.com/?s=${input}`,
       dataType: 'json'
@@ -87,11 +87,13 @@
           poster: response[index].Poster,
           year: response[index].Year
         };
+
+        getPlot(movie);
+
         if (movie.poster !== 'N/A') {
           movies.push(movie);
         }
       }
-      renderMovies();
     });
 
     $xhr.fail((err) => {
@@ -99,5 +101,18 @@
       ('Sorry, we are experiencing technical difficulties.', 4000);
       console.error(err.statusText);
     });
+
+    const getPlot = (movie) => {
+      $xhr = $.ajax({
+        method: 'GET',
+        url: `http://www.omdbapi.com/?i=${movie.id}&lot=full&r=json`,
+        dataType: 'json'
+      });
+
+      $xhr.done((data) => {
+        movie.plot = data.Plot;
+        renderMovies(movie.plot);
+      });
+    };
   });
 })();
