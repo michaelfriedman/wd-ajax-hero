@@ -57,4 +57,47 @@
   };
 
   // ADD YOUR CODE HERE
+  $('button').click((event) => {
+    event.preventDefault();
+    const input = $('input').val();
+
+    if (input.trim() === '') {
+      Materialize.toast('Please enter a movie title.', 4000);
+
+      return;
+    }
+
+    const $xhr = $.ajax({
+      method: 'GET',
+      url: `http://www.omdbapi.com/?s=${input}`,
+      dataType: 'json'
+    });
+
+    $xhr.done((data) => {
+      if ($xhr.status !== 200) {
+        return;
+      }
+      $('input').val('');
+      const response = data.Search;
+
+      for (const index in response) {
+        const movie = {
+          title: response[index].Title,
+          id: response[index].imdbID,
+          poster: response[index].Poster,
+          year: response[index].Year
+        };
+        if (movie.poster !== 'N/A') {
+          movies.push(movie);
+        }
+      }
+      renderMovies();
+    });
+
+    $xhr.fail((err) => {
+      Materialize.toast
+      ('Sorry, we are experiencing technical difficulties.', 4000);
+      console.error(err.statusText);
+    });
+  });
 })();
